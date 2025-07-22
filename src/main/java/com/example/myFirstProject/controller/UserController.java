@@ -1,7 +1,10 @@
 package com.example.myFirstProject.controller;
 
 import com.example.myFirstProject.Repository.UserEntryRepository;
+import com.example.myFirstProject.api.response.WheatherApiResponse;
 import com.example.myFirstProject.entry.User;
+import com.example.myFirstProject.service.PostService;
+import com.example.myFirstProject.service.QuoteService;
 import com.example.myFirstProject.service.UserEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +28,11 @@ public class UserController {
     public List<User> getAllUsers() {
         return userService.getAll(); // now works correctly
     }
+    @Autowired
+    private QuoteService quoteService;
+
+    @Autowired
+    private PostService postService;
 
 
     @PutMapping()
@@ -43,5 +51,22 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         userRepository.deleteByUserName(authentication.getName());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/weather")
+    public ResponseEntity<?> greeting() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        WheatherApiResponse weatherResponse = quoteService.getWeather("Mumbai");
+        String greeting = "";
+        if (weatherResponse != null) {
+            greeting = ", Weather feels like " + weatherResponse.getCurrent().getFeelslike();
+        }
+        return new ResponseEntity<>("Hi " + authentication.getName() + greeting, HttpStatus.OK);
+    }
+    @PostMapping("/post-service")
+    public ResponseEntity<?> postMethod(){
+        postService.postMethod();
+        return new ResponseEntity<>(HttpStatus.CREATED);
+
     }
 }
