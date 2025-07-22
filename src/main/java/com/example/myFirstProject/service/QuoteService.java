@@ -1,6 +1,7 @@
 package com.example.myFirstProject.service;
 
 import com.example.myFirstProject.api.response.WheatherApiResponse;
+import com.example.myFirstProject.cache.AppCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -11,10 +12,13 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class QuoteService {
 
+    @Autowired
+    private AppCache appCache;
+
     @Value("${wheather.api.key}")
     private String apiKey;
 
-    private static final String API = "http://api.weatherstack.com/current?access_key=API_KEY&query=CITY";
+    private final String API = appCache.APP_CACHE.get("wheather_api");
 
     @Autowired
     private RestTemplate restTemplate;
